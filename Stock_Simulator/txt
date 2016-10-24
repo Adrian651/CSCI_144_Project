@@ -1,0 +1,104 @@
+initalize lock CV
+Define Threads 
+Define Class for Stock{
+	
+	Symbol
+	#shres 
+	cost
+	price list 
+}
+
+initalize stocks (load price list) ->vector(long enough)
+
+initalize balance = 0 
+yield(rate of profit) = 0 
+profile = 0
+Tcost = 0
+
+num_transact = 0
+bool isBuy = True;
+
+
+*Create Server Thread<- To do updates (You dont update you dont close it you just use it to update)
+
+Thread_create(sthread,(void*)server, null);
+
+void *server(){
+	
+	cout << blance<< endl;
+	yield = profit/Tcost
+	cout << yield* 100 << "%"<< endl;
+	#activeThreads //What 
+	
+
+}
+
+
+while (Num)threads < 100000){
+	if(isBuy){
+
+	r run a randNum() between 0-1 
+
+		if (r < 7%){
+			create a buy thread
+		}
+	}
+	++num_transact
+
+	isbuy=False 
+
+	else {
+
+	randomly pick one stock & obtain cost 
+
+		if(price > (1+x%)Cost || price < (1-y%)Cost){
+
+			create a sell thread
+			++num_transaction;
+			isBuy = True;
+		}
+	}
+}
+
+
+
+buy(){
+	
+	randomly pick one stock
+	create the transaction string (format)
+	processThransact(transact)	
+}
+
+sell(){
+	create the transaction string 
+	processTransact(TransactStr)
+}
+
+ProcessTransact(tStr0){
+	
+	parse the string 
+
+	if(buy()){
+
+		get the stock 
+		update # of shares 
+		update cost (per share)
+		update balance 
+		update Tcost 
+	}
+
+	if sell(){
+
+		Get the stock 
+		update # of shares to 0
+		update Cost to 0
+		update profit(It can be negative)
+
+		sleep(2);
+	}
+
+	i
+
+
+}
+
