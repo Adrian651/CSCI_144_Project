@@ -8,6 +8,7 @@
 #include <chrono>//For seconds
 #include <ctime> //using to generate rand number
 #include <string>
+#include <sstream>
 
 #define NUM_THREADS 10000//defining number of threads
 
@@ -40,10 +41,10 @@ vector<string>current_stocks;
 double balance = 0;
 double yeild= 0; 
 double profit = 0; 
-double cost = 0; 
-double num_transact = 0;
+double Tcost = 0;
+int num_transact = 0;
 int active_thread = 0;
-bool isBuy = true;
+bool isBuy;
 double should_buy = 30;  //(Z) Buy if random Number is under 30%
 double sell_if_over = 5; //(X)
 double sell_if_under = 5;//(Y)
@@ -64,8 +65,6 @@ void initalize_stock(){
 
         while(ifs >> value){//loops until new line
             stock_prices.push(stod(value));//converting it to an integer
-            cout << value << endl;
-        
         }
        
         newStock.pricelist = stock_prices;
@@ -76,48 +75,80 @@ void initalize_stock(){
 void server(){
     while(true){
         
-        mx.lock();//aquire a lock
+       // mx.lock();//aquire a lock
         
         cout << "Total Balance: " << balance << endl;
-        yeild = profit/cost;
+        yeild = profit/Tcost;
         cout << "Yeild is:" << yeild*100 <<'%' << endl;
         
 
         sleep_for(seconds(10));
         
-        mx.unlock();//realease lock
+       // mx.unlock();//realease lock
         
     }
 }
-
+void ProcessTransact(string);
 void buy(){
 
-    //Randomly pick one stock
+    //Creating a String
+    string transaction;
+    
+    //creating new object
+    Stock stockSelected;
+  
+    //randomly picking number of shares you want to buy
+    int rand_num = rand() % 100;
+    
+    //Randomly pick one stock from Avalible Stocks
+    int random_stock = rand() % avaliable_stocks.size()  - 1;
+    stockSelected = avaliable_stocks[random_stock];
+    
+    // getting th price of the stock
+    double price = stockSelected.pricelist.front();
+    stockSelected.pricelist.pop();
+    
+    //Adding Transaction string
+    transaction += "buy "; // Buy or sell
+    transaction += stockSelected.SYMBOL + " "; // Pass the symbol of the selected stock
+    transaction += to_string(rand_num) + " "; //Pass the number of stocks that will be bought
+    transaction += to_string(price); // Pass the price of the stock
+    
+    ProcessTransact(transaction);
+    
+}
+void sell(Stock name, double price){
     
     string transaction;
     
-    transaction += "buy "; // Buy or sell
-    transaction += "stockSelected.SYMBOL "; // Pass the symbol of the selected stock
-    //transaction += to_string(randomNumber) + " "; //Pass the number of stocks that will be bought
-    //transaction += to_string(priceOfStock); // Pass the price of the stock
+    transaction += "sell ";
+    transaction += name.SYMBOL + " ";
+    transaction += to_string(price);
+    transaction += to_string(name.shares);
     
-    
-    
-    
+    ProcessTransact(transaction);
 }
-void sell(){
-    
-}
-/*
+
 void ProcessTransact(string transaction){
-    vector<string> transVec = transaction.split(" ");
     
-    if(transVec[0] == 'buy'){
+    vector<string> transVec;
+    istringstream iss(transaction);
+    
+    //reads string into vector
+    for(string s; iss >> s; ){
+        transVec.insert(transVec.begin(), s);
+    }
+    
+    if(transVec[0] == "buy"){
         
+        while(true){
+         
+            
+        }
     }
 }
 
-*/
+
 int main (int argc, const char * argv[]){
 
     srand(time_t(NULL)); //Randomize seed initialization
@@ -136,9 +167,10 @@ int main (int argc, const char * argv[]){
             if(r < should_buy){
      
                 thread buythread(buy); // Creates a Buy thread
+                num_transact++;
             }
-            num_transact++;
-            isBuy = false;
+
+            isBuy = true;
         }
         //Sell
         else {
@@ -163,21 +195,20 @@ int main (int argc, const char * argv[]){
             double price = selectedStock.pricelist.front();
             selectedStock.pricelist.pop();
             
+            
             double checkifgreater = (100 + sell_if_over) * cost;
             double checkifsmaler = (100 - sell_if_under) * cost;
           
             if(price > checkifgreater || price < checkifsmaler){
                 
-                thread sellthread(sell);
+                //create sell thread
+                //passing in the sysmbol, and price
+                thread sellthread(sell,selectedStock.SYMBOL, price);
+                ++num_transact;
             }
-            
+            isBuy = false;
         }
-            
-        
-        
+    
     }
-    
-    cout << "fuuuu" <<endl;
-    
     return EXIT_SUCCESS;
 }
