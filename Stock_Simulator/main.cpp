@@ -64,7 +64,7 @@ void initalize_stock(){
         newStock.SYMBOL = value;
 
         while(ifs >> value){//loops until new line
-            stock_prices.push(stod(value));//converting it to an integer
+            stock_prices.push(stod(value));//converting it to a double
         }
        
         newStock.pricelist = stock_prices;
@@ -139,12 +139,55 @@ void ProcessTransact(string transaction){
         transVec.insert(transVec.begin(), s);
     }
     
+    Stock thisStock;
     if(transVec[0] == "buy"){
         
-        while(true){
-         
-            
+        //Loop through avalibles stocks
+        for(int i = 0; i < avaliable_stocks.size(); i++){
+            if(transVec[1] == avaliable_stocks[i].SYMBOL){
+                thisStock = avaliable_stocks[i];
+                break;
+            }
+        }//loop
+        
+        int numOfShares = stoi(transVec[3]);
+        double cost = stod(transVec[4]);
+        
+        //update the number of shares
+        thisStock.shares += numOfShares;
+      
+        //update cost per share
+        thisStock.cost_per_share = cost;
+        
+        //update Balance
+        
+        balance = balance -(numOfShares * cost);
+        
+        //update Tcost
+        
+        Tcost = Tcost + (numOfShares * cost);
+    }
+    else {
+
+        for(int i = 0; i < avaliable_stocks.size(); i++){
+            if(transVec[1] == avaliable_stocks[i].SYMBOL){
+                thisStock = avaliable_stocks[i];
+                break;
+            }
         }
+        
+        int sellPrice = stoi(transVec[4]);
+        double numOfShares = stod(transVec[3]);
+        
+        profit = (thisStock.cost_per_share - sellPrice);
+        
+        //update the cost to 0
+        
+        thisStock.cost_per_share = 0;
+        
+        //update the number of shares to 0
+        thisStock.shares = 0;
+        
     }
 }
 
